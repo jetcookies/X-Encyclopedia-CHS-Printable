@@ -24,10 +24,7 @@
 )
 #show heading.where(level: 2): it => [
 	#set text(
-		font: (
-			(name: "Noto Sans", covers: "latin-in-cjk"),
-			"Sarasa UI SC"
-		),
+		font: "Sarasa UI SC",
 		weight: "semibold",
 		size: 18pt
 	)
