@@ -6,23 +6,84 @@
 #set document(author: (author_en, translator),title: title_cn)
 //样式设定
 //文本
-#set text(font: ("Source Serif Pro", "Source Han Serif SC"), weight: "light")
-#show emph: set text(font: ("Source Serif Pro", "KaiTi"))
+#set text(font: ("Source Serif 4", "Source Han Serif SC"), size: 11pt)
+#show emph: set text(font: ("Source Serif 4", "LXGW WenKai"))
 //标题设定
-#show heading: set text(font: "Sarasa UI SC", weight: "black", fill: rgb("#204090"))
-#show heading.where(level: 1): set text(size: 1.5em, font: "Sarasa UI SC", weight: "regular")
-#show heading.where(level: 5): set heading(numbering: none)
-#show heading.where(level: 5): set text(font: "Sarasa UI SC")
+#import "@preview/numbly:0.1.0": numbly
+#set heading(numbering: numbly(
+  "第{1:一}篇",
+  none,
+  "{3:1}.",
+  "{3:1}.{4:1}",
+  "{5:a}."
+))
+#show heading: set text(font: "Source Han Serif SC", weight: "medium", fill: rgb("#204090"))
+#show heading.where(level: 1): set text(
+	weight: "bold",
+	size: 20.75pt,
+)
+#show heading.where(level: 2): it => [
+	#set text(
+		font: (
+			(name: "Noto Sans", covers: "latin-in-cjk"),
+			"Sarasa UI SC"
+		),
+		weight: "semibold",
+		size: 18pt
+	)
+	#set block(
+		above: 36pt,
+		below: 36pt
+	)
+	#v(18pt)
+	#it
+]
+#show heading.where(level: 3): it => [
+	#set text(
+		size: 16.25pt
+	)
+	#set block(
+		above: 32.5pt,
+		below: 32.5pt
+	)
+	#it
+]
+#show heading.where(level: 4): it => [
+	#set text(
+		size: 14.5pt
+	)
+	#set block(
+		above: 29pt,
+		below: 29pt
+	)
+	#it
+]
+#show heading.where(level: 5): it => [
+	#set text(
+		size: 12.75pt
+	)
+	#set block(
+		above: 25.5pt,
+		below: 25.5pt
+	)
+	#it
+]
 //脚注设定
+#set footnote(numbering: "〔1〕")
 #show footnote: set text(fill: blue, weight: "bold")
 #show footnote.entry: set text(font: "Sarasa UI SC", weight: "light")
 //图像设定
 #set figure(supplement: [图])
-#show figure.caption: set text(size: 0.8em, font: "Sarasa UI SC", fill: rgb("#204090"))
+#show figure.caption: set text(size: 10.5pt, font: "Sarasa UI SC", fill: rgb("#204090"))
 //段落设定
-#set par(justify: true)
+#set par(
+	leading: 13.25pt,
+	spacing: 22pt,
+	first-line-indent: (amount: 22pt, all: true),
+	justify: true
+)
 //Quote Block
-#show quote.where(block: true): set text(size: 0.9em)
+#show quote.where(block: true): set text(size: 11pt)
 #show quote.where(block: true): set block(
 	fill: rgb("#E0E0E0"), inset: 0.5em, radius: 0.5em
 )
@@ -30,23 +91,37 @@
 #show raw: set text(font: "Sarasa Term SC", size: 11pt, fill: maroon)
 //超链接
 #show link: set text(fill: eastern)
-//页面设置
+// 页面
 #set page(
-	header: context [
-		#rect(width: 100%, stroke: (bottom: 0.1mm + gray))[
-			#set align(right)
-			#set text(size: 0.8em, fill: rgb(128, 128, 128), weight: "light", font: "Sarasa UI SC")
-			#title_cn
-		]
-	],
-	footer: context [
-		#set align(center)
-		#set text(size: 0.8em, weight: "bold", fill: rgb(128, 128, 128), font: "Sarasa UI SC")
-		\- #counter(page).display() -
-	],
+	paper: "a4",
+	header: context if calc.even(counter(page).get().first()) {
+		set text(font: "Sarasa Term SC")
+		counter(page).display("1")
+		set text(font: ("Source Serif 4", "LXGW WenKai"))
+		h(10.5pt);title_cn
+	} else {
+		h(1fr)
+		set text(font: ("Source Serif 4", "LXGW WenKai"))
+		context {
+			query(selector(heading.where(level: 1)).before(here())).last().body
+		};h(10.5pt)
+		set text(font: "Sarasa Term SC")
+		counter(page).display("1")
+	}
 )
 //章节页面
-#let sect(x) = page([#box([#align([#x], center+horizon)], height: 100%, width: 100%, stroke: 1.5pt+rgb("#204090"), radius: 1em)],header: none, footer: none)
+#let sect(x) = page([
+	#layout(size => {
+		let linewidth = size.width
+		let pageheight = size.height
+		box(
+			[#align([#x], center+horizon)], 
+			height: pageheight, 
+			width: linewidth, 
+			stroke: 1.5pt+rgb("#204090"), 
+			radius: 1em)		
+	})
+],header: none, footer: none)
 //封面
 #page(
 	image("res/x-enc-cover.png"),
@@ -55,20 +130,32 @@
 #pagebreak()
 //正文开始
 #page(
-	[
-		#block(height: 20em)
-		#place([
-			#block([
-				#text([#title_cn], font: "Sarasa UI SC", weight: "black", size: 2em, fill: rgb("#204090"))
-				#block(height: 32em)
-				#align([
-					原作：#author_en\ 
-					翻译：#translator
-				], left)
-			])
-		], center)
-	],
-	header: none, footer: none
+	[#place([
+		#set par(
+			leading: 0pt,
+			spacing: 0pt,
+			first-line-indent: (amount: 0pt, all: false),
+			justify: false
+		)
+		#v(2.5cm)
+		#text([#title_cn], weight: "semibold", size: 47pt, fill: rgb("#204090"))\
+		#v(8mm)
+		#text([（第三版）], size: 18pt)\
+		#v(8mm)
+		#text([#title_en], size: 14.5pt)\
+		#v(4mm)
+		#text([#author_en], font: "Sarasa UI SC",size: 11pt)\ 
+		#v(15mm)
+		#text([〔德〕#h(1mm)赫尔格·托斯滕·考茨#h(1em)著#h(1em)#translator#h(1em)译], font: "Sarasa UI SC")\
+		#v(6mm)
+		#layout(size => {
+			let linewidth = size.width
+			image("res/x4-poster.jpg", width: linewidth)
+		})
+		#v(2.5cm)
+		#image("res/egosoft-logo-bw.png",width: 2.5cm)
+	], center)],
+	header: none, footer: none, margin: (left: 0cm, right: 0cm)
 )
 #pagebreak()
 #page(
@@ -77,7 +164,6 @@
 )
 #pagebreak()
 #counter(page).update(1)
-#set heading(numbering: "A.1.")
 
 #sect([= 前言])
 
