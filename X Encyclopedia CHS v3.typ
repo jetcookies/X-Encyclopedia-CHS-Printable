@@ -19,6 +19,7 @@
 ))
 #show heading: set text(font: "Source Han Serif SC", weight: "medium", fill: rgb("#204090"))
 #show heading.where(level: 1): set text(
+	font: "Sarasa UI SC",
 	weight: "bold",
 	size: 20.75pt,
 )
