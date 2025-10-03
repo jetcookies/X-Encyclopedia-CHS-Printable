@@ -11,7 +11,7 @@
 //标题设定
 #import "@preview/numbly:0.1.0": numbly
 #set heading(numbering: numbly(
-  "第{1:一}篇",
+  "{1:A}",
   none,
   "{3:1}.",
   "{3:1}.{4:1}",
