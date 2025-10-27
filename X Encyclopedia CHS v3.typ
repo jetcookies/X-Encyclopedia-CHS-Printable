@@ -70,19 +70,15 @@
 #show footnote: set text(fill: blue, weight: "bold")
 #set footnote.entry(indent: 0em)
 #show footnote.entry: it => {
-	let loc = it.note.location()
-	super([
-		#text([
-			#numbering(
-				"1",
-				..counter(footnote).at(loc),
-			)
-		], fill: blue, font: "Source Serif 4", weight: "bold")
-	], size: 0.8em)
-	h(0.5em)			
-	set text(font: "Sarasa UI SC", weight: "light")
-	it.note.body
-} // TODO: 设置样式后不能跳转是一个已知bug，需要等待此pr进入发布 https://github.com/typst/typst/pull/6912
+  let number = numbering("1", ..counter(footnote).at(it.note.location()))
+  let prefix = link(it.note.location(), number)
+  let body = it.note.body
+	show link: set text(fill: blue, font: "Source Serif 4", weight: "bold")
+	h(it.indent)
+	super(prefix, size: 0.8em)
+	h(0.5em, weak: true)			
+	text(body, font: "Sarasa UI SC", weight: "light")
+}
 //图像设定
 #set figure(supplement: [图])
 #show figure.caption: set text(size: 10.5pt, font: "Sarasa UI SC", fill: rgb("#204090"))
